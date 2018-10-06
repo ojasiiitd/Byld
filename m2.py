@@ -6,6 +6,8 @@ m = sr.Microphone()
 def speech():
     try:
         print("A moment of silence, please...")
+        with m as source: r.adjust_for_ambient_noise(source)
+        print("Set minimum energy threshold to {}".format(r.energy_threshold))
         while True:
             print("Say something!")
             with m as source: audio = r.listen(source)
@@ -15,16 +17,16 @@ def speech():
                 value = r.recognize_google(audio)
                 #bvalue = unicode(value,"utf-8")
                 # we need some special handling here to correctly print unicode characters to standard output
-                if str is bytes: 
+                if str is bytes:  # this version of Python uses bytes for strings (Python 2)
                     print("{}".format(value).encode("utf-8"))
                     return("{}".format(value).encode("utf-8"))
-                else:
+                else:  # this version of Python uses unicode for strings (Python 3+)
                     print(u"You said {}".format(value))
                     return(u"You said {}".format(value))
             except sr.UnknownValueError:
-                print("Oops! Didn't catch that")#checks for unknown values
+                print("Oops! Didn't catch that")
             except sr.RequestError as e:
-                print("Uh oh! Couldn't request results; {0}".format(e))
+                print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
     except KeyboardInterrupt:
         pass
 
@@ -72,8 +74,6 @@ for i in range (len1) :
         x.append('\n')
     elif words[i].lower() == 'stop' :
         break   
-
-        
 len2=len(x)
 s=''
 for i in range(len2):
